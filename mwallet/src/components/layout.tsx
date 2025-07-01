@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import Header from "./header";
+import Header from "./Header";
 
 type Props = {
   children: ReactNode;
@@ -7,14 +7,9 @@ type Props = {
 
 export function Layout(props: Props) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="text-center w-[350px] h-[600px] flex justify-start items-center flex-col bg-[aqua]">
       <Header />
-      <main className="container mx-auto px-4 py-8 flex-grow max-w-3xl">
-        {props.children}
-      </main>
-      <footer className="bg-gray-100 dark:bg-gray-700 p-6 text-center">
-        <p className="text-base">dapp by Zack - 2025</p>
-      </footer>
+      <main>{props.children}</main>
     </div>
   );
 }
