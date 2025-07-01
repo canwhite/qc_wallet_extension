@@ -4,10 +4,10 @@ import "@/styles/globals.css";
 import { Toaster } from "@/components/ui/sonner";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Layout>
+    <>
       <Component {...pageProps} />
       <Toaster />
-    </Layout>
+    </>
   );
 }
 
