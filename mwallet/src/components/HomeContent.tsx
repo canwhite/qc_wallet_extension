@@ -1,14 +1,17 @@
-import { memo } from "react";
+import { memo, useContext } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { IconBrandInertia, IconLogin2 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/router";
+import ChainInfoContext from "@/context";
 
 function HomeContent({ className = "" }) {
+  const { selectedChain } = useContext(ChainInfoContext);
+  console.log("-chain-", selectedChain);
   const router = useRouter();
   return (
-    <div className={cn("flex flex-col justify-between flex-1")}>
+    <div className={cn("h-full flex flex-col justify-between")}>
       <div className="w-full flex-1 flex-col items-center space-y-3">
         <p className="flex justify-center items-center mt-6">
           <Avatar>
@@ -32,6 +35,7 @@ function HomeContent({ className = "" }) {
           <IconLogin2 /> Sign in with Seed Phrase
         </Button>
       </div>
+      {/* 上边flex-1，下边自动高度，创建fix结果 */}
       <div className="mb-2 text-[15px] h-[25px] text-gray-500">
         <h4>Created by Zack in 2023</h4>
       </div>

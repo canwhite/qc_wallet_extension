@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   Select,
   SelectContent,
@@ -9,9 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import ChainInfoContext from "@/context";
 
 const Header = () => {
-  const [selectedChain, setSelectedChain] = useState("0x1");
+  const { selectedChain, setSelectedChain } = useContext(ChainInfoContext);
 
   return (
     <header className="flex bg-gray-100 justify-between w-full px-4 py-2 items-center">
@@ -27,7 +28,8 @@ const Header = () => {
         <SelectTrigger className="w-[170px] [&[data-state=open]]:bg-gray-100 [&[data-state=open]]:border-gray-300">
           <SelectValue placeholder="Select chain" />
         </SelectTrigger>
-        <SelectContent>
+
+        <SelectContent className="bg-white">
           <SelectItem value="0x1" className="w-[150px]">
             Ethereum
           </SelectItem>
