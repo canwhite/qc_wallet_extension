@@ -10,15 +10,35 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import ChainInfoContext from "@/context";
+import { useRouter } from "next/router";
+import { Button } from "@/components/ui/button";
+import { IconChevronLeft } from "@tabler/icons-react";
 
 const Header = () => {
   const { selectedChain, setSelectedChain } = useContext(ChainInfoContext);
 
+  const router = useRouter();
+  const currentRoute = router.pathname;
+  console.log("current", currentRoute);
+
   return (
     <header className="flex bg-gray-100 justify-between w-full px-4 py-2 items-center">
-      <Avatar>
-        <AvatarImage className="p-1" src="./globe.svg" />
-      </Avatar>
+      <p className="flex items-center">
+        {currentRoute !== "/" && (
+          <Button
+            variant="outline"
+            className="border-none bg-transparent"
+            size="sm"
+            onClick={() => router.back()}
+          >
+            <IconChevronLeft stroke={2} />
+            Back
+          </Button>
+        )}
+        <Avatar className="ml-1">
+          <AvatarImage className="p-1 ml-1" src="./globe.svg" />
+        </Avatar>
+      </p>
 
       <Select
         className="w-[170px]"
