@@ -1,5 +1,5 @@
 "use client";
-import ContextBox from "@/components/ContentBox";
+import ContentBox from "@/components/ContentBox";
 
 export default function RecoverAccount() {
   return (
