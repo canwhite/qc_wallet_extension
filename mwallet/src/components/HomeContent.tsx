@@ -31,7 +31,12 @@ function HomeContent({ className = "" }) {
         >
           <IconBrandInertia /> Create a Wallet
         </Button>
-        <Button variant="outline" className="w-[220px] mt-5" size="sm">
+        <Button
+          onClick={() => router.push("/recoverAccount")}
+          variant="outline"
+          className="w-[220px] mt-5"
+          size="sm"
+        >
           <IconLogin2 /> Sign in with Seed Phrase
         </Button>
       </div>
