@@ -1,15 +1,25 @@
-import { memo, useContext } from "react";
+import { memo, useContext, useEffect } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { IconBrandInertia, IconLogin2 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/router";
-import ChainInfoContext from "@/context";
+import ChainInfoContext, { WalletAndMnemonicContext } from "@/context";
+import { isNil } from "lodash-es";
 
 function HomeContent({ className = "" }) {
   const { selectedChain } = useContext(ChainInfoContext);
   console.log("-chain-", selectedChain);
   const router = useRouter();
+  const { wallet, seedPhrase } = useContext(WalletAndMnemonicContext);
+  // console.log(wallet, seedPhrase);
+  useEffect(() => {
+    if (!isNil(wallet) && !isNil(seedPhrase)) {
+      //   router.back();
+      router.replace("/walletView");
+    }
+  }, [wallet, seedPhrase]);
+
   return (
     <div className={cn("h-full flex flex-col justify-between")}>
       <div className="w-full flex-1 flex-col items-center space-y-3">
