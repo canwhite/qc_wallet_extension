@@ -31,6 +31,8 @@ export default function CreateAccount() {
   });
 
   const setWalletAndMnemonic = useEvent(() => {
+    if (isNil(newSeedPhase)) return;
+
     setSeedPhrase(newSeedPhase);
     const address = ethers.Wallet.fromPhrase(newSeedPhase).address;
     setWallet(address);
