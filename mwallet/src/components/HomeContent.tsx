@@ -9,16 +9,8 @@ import { isNil } from "lodash-es";
 
 function HomeContent({ className = "" }) {
   const { selectedChain } = useContext(ChainInfoContext);
-  console.log("-chain-", selectedChain);
+  // console.log("-chain-", selectedChain);
   const router = useRouter();
-  const { wallet, seedPhrase } = useContext(WalletAndMnemonicContext);
-  // console.log(wallet, seedPhrase);
-  useEffect(() => {
-    if (!isNil(wallet) && !isNil(seedPhrase)) {
-      //   router.back();
-      router.replace("/walletView");
-    }
-  }, [wallet, seedPhrase]);
 
   return (
     <div className={cn("h-full flex flex-col justify-between")}>

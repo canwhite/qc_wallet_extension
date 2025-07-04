@@ -1,4 +1,3 @@
-"use client";
 import ContentBox from "@/components/ContentBox";
 
 export default function WalletView() {
