@@ -1,7 +1,7 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
-import ContentBox from "@/components/ContentBox";
-import Warning from "@/components/Warning";
+import { Box } from "@/components/ui/box";
+import { Alert } from "@/components/ui/alert";
 import { IconBrandInertia } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,8 +38,8 @@ export default function CreateAccount() {
   });
 
   return (
-    <ContentBox>
-      <Warning
+    <Box>
+      <Alert
         className="w-full"
         text="Once you generate the seed phrase , save it securely in order to recover your wallet in the future"
       />
@@ -68,6 +68,6 @@ export default function CreateAccount() {
       >
         Open Your New Wallet
       </Button>
-    </ContentBox>
+    </Box>
   );
 }

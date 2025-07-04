@@ -6,7 +6,7 @@ type Props = {
   text: string;
 };
 
-export default function Warning({ className = "", text }: Props) {
+export function Alert({ className = "", text }: Props) {
   return (
     <div className="flex items-center w-full bg-yellow-100 rounded p-4">
       <IconAlertCircle stroke={2} className="text-red-400 w-5 h-5" />

@@ -1,10 +1,10 @@
 "use client";
-import ContentBox from "@/components/ContentBox";
+import { Box } from "@/components/ui/box";
 
 export default function RecoverAccount() {
   return (
-    <ContentBox>
+    <Box>
       <p>recover Account</p>
-    </ContentBox>
+    </Box>
   );
 }

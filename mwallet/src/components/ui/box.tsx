@@ -6,7 +6,7 @@ type Props = {
   children: ReactNode;
 };
 
-export default function ContentBox({ className = "", children }: Props) {
+export function Box({ className = "", children }: Props) {
   return (
     <div className={cn("w-full h-full bg-white p-4", className)}>
       {children}
