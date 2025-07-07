@@ -27,6 +27,7 @@ export default function CreateAccount() {
   const router = useRouter();
   const generateWallet = useEvent(() => {
     const mnemonic = ethers.Wallet.createRandom().mnemonic.phrase;
+    console.log(mnemonic);
     setNewSeedPhase(mnemonic);
   });
 
