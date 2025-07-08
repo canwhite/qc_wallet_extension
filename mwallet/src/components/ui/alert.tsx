@@ -1,6 +1,6 @@
 import React from "react";
-import { IconAlertSquareRounded, IconAlertCircle } from "@tabler/icons-react";
-
+import { IconAlertCircle } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
 type Props = {
   className?: string;
   text: string;
@@ -8,11 +8,9 @@ type Props = {
 
 export function Alert({ className = "", text }: Props) {
   return (
-    <div className="flex items-center w-full bg-yellow-100 rounded p-4">
-      <IconAlertCircle stroke={2} className="text-red-400 w-5 h-5" />
-      <p className="flex-1 flex text-left items-start text-[12px] text-red-400 pl-2">
-        {text}
-      </p>
+    <div className={cn("flex w-full items-center rounded bg-yellow-100 p-4", className)}>
+      <IconAlertCircle stroke={2} className="h-5 w-5 text-red-400" />
+      <p className="flex flex-1 items-start pl-2 text-left text-[12px] text-red-400">{text}</p>
     </div>
   );
 }

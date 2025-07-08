@@ -24,32 +24,26 @@ export function Text({
     muted: "text-muted-foreground",
     error: "text-destructive",
     success: "text-success",
-    warning: "text-warning",
+    warning: "text-warning"
   };
 
   const sizeClasses = {
     sm: "text-sm",
     base: "text-base",
-    lg: "text-lg",
+    lg: "text-lg"
   };
 
   const weightClasses = {
     normal: "font-normal",
     medium: "font-medium",
     semibold: "font-semibold",
-    bold: "font-bold",
+    bold: "font-bold"
   };
 
   return (
     <Component
-      className={cn(
-        variantClasses[variant],
-        sizeClasses[size],
-        weightClasses[weight],
-        className
-      )}
-      {...props}
-    >
+      className={cn(variantClasses[variant], sizeClasses[size], weightClasses[weight], className)}
+      {...props}>
       {children}
     </Component>
   );

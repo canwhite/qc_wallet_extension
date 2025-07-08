@@ -17,7 +17,7 @@ const WalletAndMnemonicContext = createContext<WalletAndMnemonicType>({
   wallet: null,
   setWallet: () => {},
   seedPhrase: null,
-  setSeedPhrase: () => {},
+  setSeedPhrase: () => {}
 });
 
 export { WalletAndMnemonicContext };

@@ -7,5 +7,5 @@ type Props = {
 };
 
 export function Row({ className = "", children }: Props) {
-  return <div className={cn("flex px-2 flex-1", className)}>{children}</div>;
+  return <div className={cn("flex flex-1 px-2", className)}>{children}</div>;
 }

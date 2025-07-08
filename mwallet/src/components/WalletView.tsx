@@ -1,16 +1,13 @@
-import { useEffect, useState, useContext } from "react";
+import { useContext } from "react";
 import { Box } from "@/components/ui/box";
 import { WalletAndMnemonicContext } from "@/context";
 import { IconLogout } from "@tabler/icons-react";
-import { Button } from "@/components/ui/button";
 import { Row } from "@/components/ui/row";
 import useEvent from "@/hooks/useEvent";
 
 //use context
 export default function WalletView() {
-  const { wallet, seedPhrase, setWallet, setSeedPhrase } = useContext(
-    WalletAndMnemonicContext
-  );
+  const { wallet, seedPhrase, setWallet, setSeedPhrase } = useContext(WalletAndMnemonicContext);
 
   console.log(wallet);
   console.log(seedPhrase);
@@ -26,6 +23,7 @@ export default function WalletView() {
         <div className="flex justify-end" onClick={logout}>
           <IconLogout stroke={2} />
         </div>
+        {/* {wallet} */}
       </Row>
     </Box>
   );

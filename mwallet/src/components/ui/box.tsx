@@ -7,9 +7,5 @@ type Props = {
 };
 
 export function Box({ className = "", children }: Props) {
-  return (
-    <div className={cn("w-full h-full bg-white p-4", className)}>
-      {children}
-    </div>
-  );
+  return <div className={cn("h-full w-full bg-white p-4", className)}>{children}</div>;
 }

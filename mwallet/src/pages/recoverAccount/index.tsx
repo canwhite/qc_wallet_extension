@@ -4,20 +4,10 @@ import { WalletAndMnemonicContext } from "@/context";
 import { useContext, useState } from "react";
 import { ethers } from "ethers";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/ui/alert";
-import useEvent from "@/hooks/useEvent";
 import { useRouter } from "next/router";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -27,11 +17,11 @@ const FormSchema = z.object({
   seed: z
     .string()
     .min(40, {
-      message: "Bio must be at least 40 characters.",
+      message: "Bio must be at least 40 characters."
     })
     .max(160, {
-      message: "Bio must not be longer than 30 characters.",
-    }),
+      message: "Bio must not be longer than 30 characters."
+    })
 });
 
 export default function RecoverAccount() {
@@ -40,7 +30,7 @@ export default function RecoverAccount() {
   const [nonValid, setNonValid] = useState(false);
   //2）从formSchema解构出来值和用z.infer推导出类型
   const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+    resolver: zodResolver(FormSchema)
   });
   const router = useRouter();
 
@@ -66,10 +56,7 @@ export default function RecoverAccount() {
       <Alert text="Type your seed phrase in the field below to recover your wallet(it should includes 12 words separated with spaces)" />
       {/* 4)form and formField render */}
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-4"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-4">
           <FormField
             control={form.control}
             name="seed"
@@ -93,7 +80,7 @@ export default function RecoverAccount() {
           />
           <Button
             variant="outline"
-            className="mt-8 bg-blue-300  w-full"
+            className="mt-8 w-full bg-blue-300"
             size="sm"
             type="submit"
             // 因为数据不实时，所以将getValues改为watch了
@@ -101,8 +88,7 @@ export default function RecoverAccount() {
               !form.watch("seed") ||
               form.watch("seed").split(" ").length !== 12 ||
               form.watch("seed").slice(-1) === " "
-            }
-          >
+            }>
             Recover Wallet
           </Button>
           {nonValid && <p className="mt-2 text-red-500">Invalid seed phrase</p>}

@@ -11,7 +11,7 @@ export const createJSONStorage = () => ({
   },
   removeItem: async (key: string) => {
     await del(key);
-  },
+  }
 });
 
 export const createPersistedAtom = <T>(key: string, initialValue: T) => {
@@ -31,9 +31,7 @@ export const createPersistedAtom = <T>(key: string, initialValue: T) => {
     (get) => get(baseAtom),
     (get, set, update: T | ((prev: T) => T)) => {
       const nextValue =
-        typeof update === "function"
-          ? (update as (prev: T) => T)(get(baseAtom))
-          : update;
+        typeof update === "function" ? (update as (prev: T) => T)(get(baseAtom)) : update;
       set(baseAtom, nextValue);
       storage.setItem(key, JSON.stringify(nextValue));
     }

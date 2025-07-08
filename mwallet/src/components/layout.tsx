@@ -13,11 +13,9 @@ export function Layout(props: Props) {
 
   return (
     <ChainInfoContext.Provider value={{ selectedChain, setSelectedChain }}>
-      <WalletAndMnemonicContext.Provider
-        value={{ wallet, setWallet, seedPhrase, setSeedPhrase }}
-      >
+      <WalletAndMnemonicContext.Provider value={{ wallet, setWallet, seedPhrase, setSeedPhrase }}>
         {/* bg-[aqua] */}
-        <div className="text-center w-[350px] h-[600px] flex justify-start items-center flex-col ">
+        <div className="flex h-[600px] w-[350px] flex-col items-center justify-start text-center">
           <Header />
           {/* 注意宽高传递*/}
           <main className="w-full flex-1">{props.children}</main>

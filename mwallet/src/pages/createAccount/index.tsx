@@ -1,18 +1,10 @@
 "use client";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { Box } from "@/components/ui/box";
 import { Alert } from "@/components/ui/alert";
-import { IconBrandInertia } from "@tabler/icons-react";
+
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { ethers } from "ethers";
 import useEvent from "@/hooks/useEvent";
 import { WalletAndMnemonicContext } from "@/context";
@@ -21,9 +13,7 @@ import { useRouter } from "next/router";
 
 export default function CreateAccount() {
   const [newSeedPhase, setNewSeedPhase] = useState<string | null>(null);
-  const { wallet, seedPhrase, setWallet, setSeedPhrase } = useContext(
-    WalletAndMnemonicContext
-  );
+  const { setWallet, setSeedPhrase } = useContext(WalletAndMnemonicContext);
   const router = useRouter();
   const generateWallet = useEvent(() => {
     const mnemonic = ethers.Wallet.createRandom().mnemonic.phrase;
@@ -48,16 +38,15 @@ export default function CreateAccount() {
       />
       <Button
         variant="outline"
-        className="mt-4 bg-blue-300  w-full"
+        className="mt-4 w-full bg-blue-300"
         size="sm"
-        onClick={() => generateWallet()}
-      >
+        onClick={() => generateWallet()}>
         Generate Seed Phrase
       </Button>
-      <Card className="mt-4 border-gray-300 ">
+      <Card className="mt-4 border-gray-300">
         <CardContent className="h-[100px]">
           {newSeedPhase && (
-            <div className="whitespace-pre-wrap break-words overflow-auto h-full">
+            <div className="h-full overflow-auto break-words whitespace-pre-wrap">
               {newSeedPhase}
             </div>
           )}
@@ -65,10 +54,9 @@ export default function CreateAccount() {
       </Card>
       <Button
         variant="outline"
-        className="mt-4  w-full"
+        className="mt-4 w-full"
         size="sm"
-        onClick={() => setWalletAndMnemonic()}
-      >
+        onClick={() => setWalletAndMnemonic()}>
         Open Your New Wallet
       </Button>
     </Box>
