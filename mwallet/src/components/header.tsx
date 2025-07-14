@@ -17,7 +17,7 @@ const Header = () => {
 
   const router = useRouter();
   const currentRoute = router.pathname;
-  console.log("current", currentRoute);
+  // console.log("current", currentRoute);
 
   return (
     <header className="flex w-full items-center justify-between bg-gray-100 px-4 py-2">
