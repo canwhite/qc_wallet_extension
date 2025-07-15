@@ -10,80 +10,124 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAsyncEffect } from "ahooks";
 import { CHAINS_CONFIG } from "../pages/chains";
 import { Skeleton } from "@/components/ui/skeleton";
-
-//form部分
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ethers } from "ethers";
 
-//0,define schema
-const formSchema = z.object({
+// Define schema
+const FormSchema = z.object({
   address: z
     .string()
-    .length(42, {
-      message: "Address must be 42 characters long."
-    })
-    .regex(/^0x[a-fA-F0-9]{40}$/, {
-      message: "Invalid Ethereum address format."
-    }),
-  // 金额通常是数字类型，表示以太坊或其他代币的数量
-  amount: z.number().min(0, {
-    message: "Amount must be a positive number."
-  })
+    .min(1, "请输入钱包地址")
+    .length(42, { message: "钱包地址必须是42个字符" })
+    .regex(/^0x[a-fA-F0-9]{40}$/, { message: "无效的以太坊地址格式" }),
+  amount: z
+    .string()
+    .min(1, "请输入转账金额")
+    .regex(/^\d*\.?\d+$/, "必须是有效的数字")
+    .refine((val) => Number(val) > 0, "金额必须大于0")
 });
 
-//use context
+//TODO，获取对应账户的tokens和nfts
 export default function WalletView() {
-  const { wallet, setWallet, setSeedPhrase } = useContext(WalletAndMnemonicContext);
+  const { wallet, seedPhrase, setWallet, setSeedPhrase } = useContext(WalletAndMnemonicContext);
   const { selectedChain } = useContext(ChainInfoContext);
   const [balance, setBalance] = useState(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
-  console.log("selected chain", selectedChain);
   const chainInfo = CHAINS_CONFIG[selectedChain];
   const { tricker } = chainInfo;
+  const [hash, setHash] = useState(null);
+  const [processing, setProcessing] = useState(false);
 
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  // Define form
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    mode: "all", // Validate on both change and blur
     defaultValues: {
-      // address: ""
+      address: "",
+      amount: ""
     }
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  // const watchedFields = form.watch();
+  // // 使用form.formState.errors获取错误信息，当然formState里还有isValid
+  // const formErrors = form.formState.errors;
+
+  //get balance data
+  const getBalance = async () => {
+    const response = await fetch("/api/balance", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        address: wallet,
+        chainId: selectedChain
+      })
+    });
+    const data = response.json();
+    //refresh data inside
+    setBalance(data.balance);
+  };
+  // get tokens data
+  // const getTokens = async () => {};
+  // get nfts data
+  // const getNfts = async () => {};
+
+  // Define submit handler
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    const { address, amount } = data;
+    const chain = CHAINS_CONFIG[selectedChain];
+    const provider = new ethers.JsonRpcProvider(chain.rpcUrl);
+    //然后拿到私钥
+    const privateKey = ethers.Wallet.fromPhrase(seedPhrase).privateKey;
+    //然后通过provider和private Key拿到wallet
+    const wallet = new ethers.Wallet(privateKey, provider);
+    const tx = {
+      to: address,
+      value: ethers.parseEther(amount.toString()) //parse ether 相当于结构eth，得到的是wei，交易的时候要用wei
+    };
+    //交易的部分我们try catch
+    setProcessing(true);
+    try {
+      const transaction = await wallet.sendTransaction(tx);
+      setHash(transaction.hash);
+      const receipt = await transaction.wait();
+
+      //如果交易成功
+      if (receipt.status === 1) {
+        //刷新数据
+        await getBalance();
+      } else {
+        console.log("failed");
+      }
+    } finally {
+      setHash(null);
+      setProcessing(false);
+    }
   }
 
   useAsyncEffect(async () => {
     if (wallet) {
       setBalanceLoading(true);
       try {
-        const response = await fetch("/api/balance", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            address: wallet,
-            chainId: selectedChain
-          })
-        });
-        const data = await response.json();
-        const balance = data.balance;
-        setBalance(balance);
-        setBalanceLoading(false);
+        await getBalance();
       } catch (error) {
-        setBalanceLoading(false);
         console.error("Error fetching balance:", error);
+      } finally {
+        setBalanceLoading(false);
       }
     }
-  }, []);
+  }, [wallet, selectedChain]);
 
   const logout = useEvent(() => {
     setSeedPhrase(null);
@@ -99,7 +143,7 @@ export default function WalletView() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <p className="text-[12px] text-gray-500">
-                  {wallet.slice(0, 4)}...{wallet.slice(38)}
+                  {wallet?.slice(0, 4)}...{wallet?.slice(-4)}
                 </p>
               </TooltipTrigger>
               <TooltipContent className="bg-gray-200">
@@ -119,8 +163,8 @@ export default function WalletView() {
           <TabsTrigger value="2">NFTs</TabsTrigger>
           <TabsTrigger value="1">Transfer</TabsTrigger>
         </TabsList>
-        <TabsContent value="3">Tokens</TabsContent>
-        <TabsContent value="2">NFTs</TabsContent>
+        <TabsContent value="3">TODO,获取tokens信息</TabsContent>
+        <TabsContent value="2">TODO,获取nfts信息</TabsContent>
         <TabsContent value="1">
           {balanceLoading ? (
             <div className="mt-4 flex items-center space-x-4">
@@ -135,50 +179,75 @@ export default function WalletView() {
             </div>
           ) : (
             <div className="mt-2">
-              <p className="text-[14px]"> Native Balance</p>
+              <p className="text-[14px]">Native Balance</p>
               <p className="mt-4 text-[18px] font-bold">
-                {Number(balance).toFixed(2)}&nbsp;{tricker}
+                {balance ? Number(balance).toFixed(2) : "0.00"} {tricker}
               </p>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 space-y-5">
                   <FormField
                     control={form.control}
                     name="address"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel>To:</FormLabel>
                         <FormControl>
-                          <Input placeholder="0x..." {...field} />
+                          <Input
+                            placeholder="0x..."
+                            {...field}
+                            // onChange={(e) => {
+                            //   field.onChange(e);
+                            //   setSendToAddress(e.target.value);
+                            // }}
+                          />
                         </FormControl>
+                        {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
                     name="amount"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel>Amount:</FormLabel>
                         <FormControl>
-                          <Input placeholder="amount" {...field} />
+                          <Input
+                            placeholder="amount"
+                            {...field}
+                            // onChange={(e) => {
+                            //   field.onChange(e);
+                            //   setAmountToSend(e.target.value);
+                            //   console.log(fieldState);
+                            // }}
+                          />
                         </FormControl>
+                        {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
                       </FormItem>
                     )}
                   />
-
                   <Button
-                    disabled={
-                      !form.watch("address") ||
-                      !form.watch("amount") ||
-                      isNaN(Number(form.watch("amount"))) ||
-                      Number(form.watch("amount")) <= 0
-                    }
+                    disabled={!form.formState.isValid}
                     variant="outline"
                     className="mt-5 w-full bg-blue-300"
                     size="sm"
                     type="submit">
                     Submit
                   </Button>
+                  {/* 在这里显示hash的错误 */}
+                  {processing && (
+                    <div className="flex flex-col items-center">
+                      <Skeleton className="h-4 w-4 rounded-full bg-gray-300" />
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <p className="text-[12px] text-gray-500">Hover for Tx Hash</p>
+                        </TooltipTrigger>
+                        <TooltipContent className="mt-2 bg-gray-200">
+                          <p>{hash}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  )}
                 </form>
               </Form>
             </div>
