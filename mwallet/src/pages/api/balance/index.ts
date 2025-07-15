@@ -18,6 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     chainId = query.chainId;
     console.log("GET 请求参数:", { address, chainId });
   }
+
   // 如果是POST请求，从body中获取参数
   else if (method === "POST") {
     address = body.address;
