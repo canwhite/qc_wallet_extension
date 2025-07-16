@@ -39,16 +39,17 @@ const FormSchema = z.object({
     .refine((val) => Number(val) > 0, "金额必须大于0")
 });
 
-//TODO，获取对应账户的tokens和nfts
 export default function WalletView() {
   const { wallet, seedPhrase, setWallet, setSeedPhrase } = useContext(WalletAndMnemonicContext);
   const { selectedChain } = useContext(ChainInfoContext);
   const [balance, setBalance] = useState(null);
-  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const chainInfo = CHAINS_CONFIG[selectedChain];
   const { tricker } = chainInfo;
   const [hash, setHash] = useState(null);
   const [processing, setProcessing] = useState(false);
+  const [tokens, setTokens] = useState(null);
+  const [nfts, setNfts] = useState(null);
 
   // Define form
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -78,10 +79,21 @@ export default function WalletView() {
     //refresh data inside
     setBalance(data.balance);
   };
-  // get tokens data
-  // const getTokens = async () => {};
-  // get nfts data
-  // const getNfts = async () => {};
+  // get tokens and nfts
+  const getTokensAndNfts = async () => {
+    const response = await fetch("/api/moralis", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        address: wallet,
+        chainId: selectedChain
+      })
+    });
+    const { tokens, nfts } = await response.json();
+    // console.log("--tokens,nfts--", tokens, nfts);
+    setTokens(tokens);
+    setNfts(nfts);
+  };
 
   // Define submit handler
   async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -103,10 +115,8 @@ export default function WalletView() {
       setHash(transaction.hash);
       const receipt = await transaction.wait();
 
-      //如果交易成功
       if (receipt.status === 1) {
-        //刷新数据
-        await getBalance();
+        await Promise.allSettled([getBalance(), getTokensAndNfts()]);
       } else {
         console.log("failed");
       }
@@ -117,14 +127,14 @@ export default function WalletView() {
   }
 
   useAsyncEffect(async () => {
-    if (wallet) {
-      setBalanceLoading(true);
+    if (wallet && selectedChain) {
+      setLoading(true);
       try {
-        await getBalance();
+        await Promise.allSettled([getBalance(), getTokensAndNfts()]);
       } catch (error) {
         console.error("Error fetching balance:", error);
       } finally {
-        setBalanceLoading(false);
+        setLoading(false);
       }
     }
   }, [wallet, selectedChain]);
@@ -163,10 +173,30 @@ export default function WalletView() {
           <TabsTrigger value="2">NFTs</TabsTrigger>
           <TabsTrigger value="1">Transfer</TabsTrigger>
         </TabsList>
-        <TabsContent value="3">TODO,获取tokens信息</TabsContent>
-        <TabsContent value="2">TODO,获取nfts信息</TabsContent>
+        <TabsContent value="3">
+          <div className="mt-4">
+            {tokens && tokens?.length > 0 ? (
+              <div>显示正常内容</div>
+            ) : (
+              <div>
+                <span>no tokens under this address</span>
+              </div>
+            )}
+          </div>
+        </TabsContent>
+        <TabsContent value="2">
+          <div className="mt-4">
+            {nfts && nfts?.length > 0 ? (
+              <div>显示正常内容</div>
+            ) : (
+              <div>
+                <span>no NFTs under this address</span>
+              </div>
+            )}
+          </div>
+        </TabsContent>
         <TabsContent value="1">
-          {balanceLoading ? (
+          {loading ? (
             <div className="mt-4 flex items-center space-x-4">
               <Skeleton className="h-12 w-12 rounded-full bg-gray-200" />
               <div className="space-y-2">

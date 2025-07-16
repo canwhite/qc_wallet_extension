@@ -46,7 +46,7 @@ const Header = () => {
           <SelectItem value="0x1" className="w-[150px]">
             Ethereum
           </SelectItem>
-          <SelectItem value="0x13881" className="w-[150px]">
+          {/* <SelectItem value="0x13881" className="w-[150px]">
             Mumbai Testnet
           </SelectItem>
           <SelectItem value="0x89" className="w-[150px]">
@@ -54,7 +54,7 @@ const Header = () => {
           </SelectItem>
           <SelectItem value="0xa86a" className="w-[150px]">
             Avalanche
-          </SelectItem>
+          </SelectItem> */}
         </SelectContent>
       </Select>
     </header>

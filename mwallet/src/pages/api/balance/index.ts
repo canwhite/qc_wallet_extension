@@ -3,11 +3,7 @@ import { CHAINS_CONFIG } from "./../../chains";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
-  // 在App Router中，API路由的使用方式与Pages Router相同
-  // 请求路径仍然是 /api/balance
-  // 请求方法支持 GET 和 POST
-  // 参数可以通过 query 或 body 传递
-  // 返回格式保持一致
+  //of course，we can get info in this way
   const { method, query, body } = req;
 
   let address, chainId;
