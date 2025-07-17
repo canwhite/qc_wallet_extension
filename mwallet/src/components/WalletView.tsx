@@ -289,7 +289,7 @@ export default function WalletView() {
                     type="submit">
                     Submit
                   </Button>
-                  {/* 在这里显示hash的错误 */}
+                  {/* 显示hash的错误 */}
                   {processing && (
                     <div className="flex flex-col items-center">
                       <Skeleton className="h-4 w-4 rounded-full bg-gray-300" />
