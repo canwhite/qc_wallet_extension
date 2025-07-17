@@ -14,6 +14,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ethers } from "ethers";
+import { Card, CardContent } from "@/components/ui/card";
+import { IconHelpHexagon } from "@tabler/icons-react";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
   Form,
   FormControl,
@@ -22,9 +27,6 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { ethers } from "ethers";
-import { Card, CardContent } from "@/components/ui/card";
 
 // Define schema
 const FormSchema = z.object({
@@ -41,10 +43,12 @@ const FormSchema = z.object({
 });
 
 //给我一些tokens
-const testTokens = [
-  { symbol: "ETH", name: "Ethereum", balance: 100000000000, decimals: 18 },
-  { symbol: "LINK", name: "Chainlink", balance: 100000000000, decimals: 18 }
-];
+// const testTokens = [
+//   { symbol: "ETH", name: "Ethereum", balance: 10000000000000000, decimals: 18 },
+//   { symbol: "LINK", name: "Chainlink", balance: 109000000000000000, decimals: 18 },
+//   { symbol: "ETH", name: "Ethereum", balance: 10000000000000000, decimals: 18 },
+//   { symbol: "LINK", name: "Chainlink", balance: 109000000000000000, decimals: 18 },
+// ];
 
 // const testNfts = [
 //   "https://fastly.picsum.photos/id/923/200/300.jpg?hmac=eiYSYaG7v46VlrE38Amrg33bd2FzVjaCsQrLMdekyAU",
@@ -141,7 +145,6 @@ export default function WalletView() {
     }
   }
 
-  //init
   useAsyncEffect(async () => {
     if (wallet && selectedChain) {
       setLoading(true);
@@ -153,7 +156,6 @@ export default function WalletView() {
         setLoading(false);
       }
     }
-    //初始化的时候也会进行，先这样吧
   }, [wallet, selectedChain]);
 
   const logout = useEvent(() => {
@@ -193,13 +195,40 @@ export default function WalletView() {
           <TabsTrigger value="2">NFTs</TabsTrigger>
           <TabsTrigger value="1">Transfer</TabsTrigger>
         </TabsList>
-        <TabsContent value="3">
-          <div className="mt-4">
-            {testTokens && testTokens?.length > 0 ? (
-              <div>
-                <Card className="border-gray-300">
-                  <CardContent>
-                    <p>Card Content</p>
+        <TabsContent value="3" className="h-[400px]">
+          <div className="h-full py-4">
+            {tokens && tokens?.length > 0 ? (
+              <div className="h-full">
+                <Card className="h-full border-gray-300">
+                  <CardContent className="h-full overflow-auto">
+                    {tokens.map((item, idx) => {
+                      return (
+                        <>
+                          <Row key={idx} className="items-center justify-between">
+                            <p className="flex items-center justify-start">
+                              {item.logo ? (
+                                <Avatar>
+                                  <AvatarImage src={item.logo} />
+                                </Avatar>
+                              ) : (
+                                <IconHelpHexagon className="mt-[-5px]" stroke={2} />
+                              )}
+                              <span className="ml-4 flex flex-col">
+                                <span>{item.symbol} </span>
+                                <span className="text-[12px] text-gray-400">{item.name}</span>
+                              </span>
+                            </p>
+                            <p className="text-gray-500">
+                              {(Number(item.balance) / 10 ** Number(item.decimals)).toFixed(2)}{" "}
+                              Tokens
+                            </p>
+                          </Row>
+                          {idx !== testTokens.length - 1 && (
+                            <Separator className="my-2 bg-gray-200" />
+                          )}
+                        </>
+                      );
+                    })}
                   </CardContent>
                 </Card>
               </div>
@@ -289,7 +318,7 @@ export default function WalletView() {
                     type="submit">
                     Submit
                   </Button>
-                  {/* 显示hash的错误 */}
+
                   {processing && (
                     <div className="flex flex-col items-center">
                       <Skeleton className="h-4 w-4 rounded-full bg-gray-300" />
