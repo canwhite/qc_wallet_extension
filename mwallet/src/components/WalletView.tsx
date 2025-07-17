@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ethers } from "ethers";
+import { Card, CardContent } from "@/components/ui/card";
 
 // Define schema
 const FormSchema = z.object({
@@ -38,6 +39,19 @@ const FormSchema = z.object({
     .regex(/^\d*\.?\d+$/, "必须是有效的数字")
     .refine((val) => Number(val) > 0, "金额必须大于0")
 });
+
+//给我一些tokens
+const testTokens = [
+  { symbol: "ETH", name: "Ethereum", balance: 100000000000, decimals: 18 },
+  { symbol: "LINK", name: "Chainlink", balance: 100000000000, decimals: 18 }
+];
+
+// const testNfts = [
+//   "https://fastly.picsum.photos/id/923/200/300.jpg?hmac=eiYSYaG7v46VlrE38Amrg33bd2FzVjaCsQrLMdekyAU",
+//   "https://fastly.picsum.photos/id/62/200/300.jpg?hmac=Ova5b3XqMVygL4ZvFJ1MfAehiXKiM1Ol14jN_6widUY",
+//   "https://images.unsplash.com/photo-1546521343-4eb2c01aa44b",
+//   "https://fastly.picsum.photos/id/62/200/300.jpg?hmac=Ova5b3XqMVygL4ZvFJ1MfAehiXKiM1Ol14jN_6widUY"
+// ];
 
 export default function WalletView() {
   const { wallet, seedPhrase, setWallet, setSeedPhrase } = useContext(WalletAndMnemonicContext);
@@ -79,6 +93,7 @@ export default function WalletView() {
     //refresh data inside
     setBalance(data.balance);
   };
+
   // get tokens and nfts
   const getTokensAndNfts = async () => {
     const response = await fetch("/api/moralis", {
@@ -126,6 +141,7 @@ export default function WalletView() {
     }
   }
 
+  //init
   useAsyncEffect(async () => {
     if (wallet && selectedChain) {
       setLoading(true);
@@ -137,11 +153,15 @@ export default function WalletView() {
         setLoading(false);
       }
     }
+    //初始化的时候也会进行，先这样吧
   }, [wallet, selectedChain]);
 
   const logout = useEvent(() => {
     setSeedPhrase(null);
     setWallet(null);
+    setBalance(null);
+    setNfts(null);
+    setTokens(null);
   });
 
   return (
@@ -175,26 +195,46 @@ export default function WalletView() {
         </TabsList>
         <TabsContent value="3">
           <div className="mt-4">
-            {tokens && tokens?.length > 0 ? (
-              <div>显示正常内容</div>
+            {testTokens && testTokens?.length > 0 ? (
+              <div>
+                <Card className="border-gray-300">
+                  <CardContent>
+                    <p>Card Content</p>
+                  </CardContent>
+                </Card>
+              </div>
             ) : (
               <div>
-                <span>no tokens under this address</span>
+                <span>you seem to not have tokens yet</span>
               </div>
             )}
           </div>
         </TabsContent>
-        <TabsContent value="2">
-          <div className="mt-4">
+
+        <TabsContent value="2" className="h-[400px]">
+          <div className="h-full py-4">
             {nfts && nfts?.length > 0 ? (
-              <div>显示正常内容</div>
+              <CardContent className="flex h-full flex-col items-center overflow-auto">
+                {nfts.map((item, index) => {
+                  return (
+                    <img
+                      key={index}
+                      src={item}
+                      alt="NFT"
+                      className="mb-4 h-auto w-full rounded-[8px] object-fill"
+                      style={{ aspectRatio: "1/1" }}
+                    />
+                  );
+                })}
+              </CardContent>
             ) : (
               <div>
-                <span>no NFTs under this address</span>
+                <span>you seem to not have NTFs yet</span>
               </div>
             )}
           </div>
         </TabsContent>
+
         <TabsContent value="1">
           {loading ? (
             <div className="mt-4 flex items-center space-x-4">
@@ -222,14 +262,7 @@ export default function WalletView() {
                       <FormItem>
                         <FormLabel>To:</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="0x..."
-                            {...field}
-                            // onChange={(e) => {
-                            //   field.onChange(e);
-                            //   setSendToAddress(e.target.value);
-                            // }}
-                          />
+                          <Input placeholder="0x..." {...field} />
                         </FormControl>
                         {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
                       </FormItem>
@@ -242,15 +275,7 @@ export default function WalletView() {
                       <FormItem>
                         <FormLabel>Amount:</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="amount"
-                            {...field}
-                            // onChange={(e) => {
-                            //   field.onChange(e);
-                            //   setAmountToSend(e.target.value);
-                            //   console.log(fieldState);
-                            // }}
-                          />
+                          <Input placeholder="amount" {...field} />
                         </FormControl>
                         {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
                       </FormItem>
